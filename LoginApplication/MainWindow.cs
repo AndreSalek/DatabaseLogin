@@ -20,7 +20,6 @@ namespace LoginApplication
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            
         }
     }
 }

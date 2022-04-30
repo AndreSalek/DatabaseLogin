@@ -13,33 +13,55 @@ namespace LoginApplication
 {
     public partial class LoginForm : Form
     {
+        Timer timer;
         public LoginForm()
         {
             InitializeComponent();
             
+        }
+        public void SetupTimer()
+        {
+            timer = new Timer();
+            timer.Enabled = true;
+            timer.Interval = 5000;
+            timer.Tick += Timer_Tick;
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            lblOutput.Text = "";
+            timer.Stop();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
             try
             {
+                //storing testbox values in variables
                 string username = txtLoginUsername.Text.ToLower().Trim();
                 string password = txtLoginPassword.Text;
+                //Opening connection
                 MyDatabaseConn conn = new MyDatabaseConn();
                 conn.Open();
+                //function Login looks whether textbox values match any database records
                 User user = conn.Login(username, password);
+                //if null is returned (data did not match any record)
                 if (user != null)
                 {
-                    this.Close();
-                    new MainWindow(user);
+                    this.Hide();
+                    new MainWindow(user).Show();
                 }
-                else lblOutput.Text = "User does not exist";
-                conn.Close();
+                else
+                {
+                    SetupTimer();
+                    timer.Start();
+                    lblOutput.Text = "User does not exist";
+                }
+                    conn.Close();
 
             }
             catch (Exception ex)
             {
-                lblOutput.Text = "User does not exist";
                 Debug.WriteLine(ex);
             }
         }
